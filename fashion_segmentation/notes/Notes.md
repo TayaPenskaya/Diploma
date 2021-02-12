@@ -31,3 +31,9 @@ In the third stage, MN contains a feature extractor and a similarity learning ne
 ### Results
 
 ![](./images/results_segmentation.png)
+
+### Implementation
+
+In our experiments, each training image is resized to its shorter edge of 800 pixels with its longer edge that is no more than 1333 pixels. Each minibatch has two images in a GPU and 8 GPUs are used for training. For minibatch size 16, the learning rate (LR) schedule starts at 0.02 and is decreased by a factor of 0.1 after 8 epochs and then 11 epochs, and finally terminates at 12 epochs. This scheduler is denoted as 1x. Mask R-CNN adopts 2x schedule for clothes detection and segmentation where ‘2x’ is twice as long as 1x with the LR scaled proportionally. Then It adopts s1x for landmark and pose estimation where s1x scales the 1x schedule by roughly 1.44x. Match R-CNN uses 1x schedule for consumer-to-shop clothes retrieval. The above models are trained by using SGD with a weight decay of $10^{−5}$ and momentum of 0.9.
+
+[Mask R-CNN Segmentation](https://github.com/facebookresearch/detectron2/tree/master/configs/COCO-InstanceSegmentation)
