@@ -24,3 +24,4 @@ My diploma repository.
 
 ## Notes
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
+- [Face](https://github.com/ChanChiChoi/awesome-Face_Recognition)
