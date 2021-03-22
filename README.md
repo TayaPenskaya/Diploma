@@ -8,7 +8,8 @@ My diploma repository.
 - [ ] Скачать и отсортить картинки с апи
 
 ### Fashion segmentation
-- [ ] Посмотреть результаты, полученные при 40к
+- [X] Посмотреть результаты, полученные при 40к
+- [ ] Сделать нормальную структуру проекта
 - [ ] Если все ок, то запустить на 190к
 
 ### Face segmentation
@@ -24,4 +25,5 @@ My diploma repository.
 
 ## Notes
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
-- [Face](https://github.com/ChanChiChoi/awesome-Face_Recognition)
+- [Face GitHubs](https://github.com/ChanChiChoi/awesome-Face_Recognition)
+- [Face Datasets](https://github.com/switchablenorms/CelebAMask-HQ)
