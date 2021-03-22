@@ -21,3 +21,6 @@ My diploma repository.
 
 ### GAN
 - [ ] Поискать ганы с сегментацией
+
+## Notes
+- [Face GAN](https://github.com/IIGROUP/TediGAN)
