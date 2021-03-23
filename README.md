@@ -18,7 +18,6 @@ My diploma repository.
 
 ### People segmentation
 - [ ] Было бы удобно, если все с detectron2
-- [ ] Встроить старое решение
 
 ### GAN
 - [ ] Поискать ганы с сегментацией
