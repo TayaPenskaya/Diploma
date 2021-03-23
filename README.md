@@ -37,3 +37,4 @@ My diploma repository.
 | [Init Photo + Pose + Clothes](https://fashiontryon.wixsite.com/fashiontryon) |Try-On |
 
 - [All about fashion](https://github.com/lzhbrian/Cool-Fashion-Papers)
+- [Text to image](https://github.com/weihaox/awesome-image-translation/blob/master/content/multi-modal-representation.md#text-to-image)
