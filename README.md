@@ -1,19 +1,6 @@
 # Diploma
 My diploma repository.
 
-## Tasks
-
-### Датасет
-- [ ] Собрать нормальный датасет (спарсить ламоду или еще кого)
-- [ ] Скачать и отсортить картинки с апи
-
-### Fashion segmentation
-- [X] Посмотреть результаты, полученные при 40к
-- [ ] Сделать нормальную структуру проекта
-
-### GAN
-- [ ] Поискать ганы с сегментацией
-
 ## Notes
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
 - [Face GitHubs](https://github.com/ChanChiChoi/awesome-Face_Recognition)
