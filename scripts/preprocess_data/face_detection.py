@@ -24,7 +24,9 @@ with mp_face_detection.FaceDetection(
         if isfile(full_path):
             image = cv2.imread(full_path)
             results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            print(results.detections)
+            if not results.detections:
+                continue
+            #print(results.detections)
             if (len(results.detections) == 1):
                 copyfile(full_path, join(out_path, f))
 
