@@ -1,6 +1,6 @@
 # Data
 
-[scripts for preprocessing](./scripts)
+[scripts for preprocessing](../scripts/preprocess_data)
 
 You can download data by yourself:
 
