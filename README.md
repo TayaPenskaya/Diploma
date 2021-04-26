@@ -1,5 +1,6 @@
 # Diploma
-My diploma repository.
+
+**Detailed segmentation of a human image and generation of a new image.**
 
 ## Notes
 - [DCGAN for segmentation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html)
