@@ -2,6 +2,7 @@
 My diploma repository.
 
 ## Notes
+- [DCGAN for segmentation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html)
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
 - [Face GitHubs](https://github.com/ChanChiChoi/awesome-Face_Recognition)
 - [Face Datasets](https://github.com/switchablenorms/CelebAMask-HQ)
