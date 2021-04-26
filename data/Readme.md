@@ -3,4 +3,5 @@
 You can download data by yourself:
 
 - fashionpedia
-- [coco](https://cocodataset.org/#download) -- 2014
+- [coco images](https://cocodataset.org/#download) -- 2014
+- [coco text](https://bgshih.github.io/cocotext/#h2-download)
