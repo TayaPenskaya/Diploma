@@ -92,7 +92,7 @@ class Discriminator(nn.Module):
 
 
 # Loss functions
-adversarial_loss = torch.nn.BCELoss()
+adversarial_loss = torch.nn.MSELoss()
 
 # Initialize generator and discriminator
 generator = Generator()
@@ -149,12 +149,10 @@ for epoch in range(opt.n_epochs):
 
         # Sample noise and labels as generator input
         z = Variable(FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim))))
-        print(labels.shape)
         #gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, batch_size)))
 
         # Generate a batch of images
         gen_joints = generator(z, labels)
-        print(gen_joints[0])
 
         # Loss measures generator's ability to fool the discriminator
         validity = discriminator(gen_joints, labels)
