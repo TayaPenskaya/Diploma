@@ -49,7 +49,6 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
         
-        self.label_embedding = nn.Embedding(opt.n_classes, opt.n_classes)
         self.joint_shape = (opt.n_joints, opt.dim)
 
         def block(in_feat, out_feat, normalize=True):
@@ -66,7 +65,7 @@ class Generator(nn.Module):
         )
 
     def forward(self, noise, labels):
-        gen_input = torch.cat((self.label_embedding(labels), noise), -1)
+        gen_input = torch.cat((labels, noise), -1)
         joints = self.model(gen_input)
         joints = joints.view(joints.size(0), *self.joint_shape)
         return joints
@@ -76,7 +75,6 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
 
-        self.label_embedding = nn.Embedding(opt.n_classes, opt.n_classes)
         self.joint_shape = (opt.n_joints, opt.dim)
 
         self.model = nn.Sequential(
@@ -88,7 +86,7 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, joints, labels):
-        d_in = torch.cat((joints.view(joints.size(0), -1), self.label_embedding(labels)), -1)
+        d_in = torch.cat((joints.view(joints.size(0), -1), labels), -1)
         validity = self.model(d_in)
         return validity
 
@@ -151,14 +149,15 @@ for epoch in range(opt.n_epochs):
 
         # Sample noise and labels as generator input
         z = Variable(FloatTensor(np.random.normal(0, 1, (batch_size, opt.latent_dim))))
-        gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, batch_size)))
+        print(labels.shape)
+        #gen_labels = Variable(LongTensor(np.random.randint(0, opt.n_classes, batch_size)))
 
         # Generate a batch of images
-        gen_joints = generator(z, gen_labels)
+        gen_joints = generator(z, labels)
         print(gen_joints[0])
 
         # Loss measures generator's ability to fool the discriminator
-        validity = discriminator(gen_joints, gen_labels)
+        validity = discriminator(gen_joints, labels)
         g_loss = adversarial_loss(validity, valid)
 
         g_loss.backward()
@@ -175,7 +174,7 @@ for epoch in range(opt.n_epochs):
         d_real_loss = adversarial_loss(validity_real, valid)
 
         # Loss for fake images
-        validity_fake = discriminator(gen_joints.detach(), gen_labels)
+        validity_fake = discriminator(gen_joints, labels)
         d_fake_loss = adversarial_loss(validity_fake, fake)
 
         # Total discriminator loss
