@@ -54,6 +54,11 @@ class JointsDataset(Dataset):
         for i in range(self.num_joints):
             if joints_vis[i, 0] > 0.0:
                 joints[i, 0:2] = affine_transform(joints[i, 0:2], trans)
+                
+        joints = [[y/256 for y in x] for x in joints]
+        joints = torch.FloatTensor(joints)
+                
+        #joints = [[(y / 256) for y in x] for x in joints]
 
         #target, target_weight = self.generate_target(joints, joints_vis)
 
