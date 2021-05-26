@@ -29,6 +29,7 @@ class Generator(nn.Module):
             *block(80, 64),
             *block(64, 48),
             *block(48, 32)
+            
         )
         
         self.head2 = nn.Sequential(
@@ -73,7 +74,7 @@ class Discriminator(nn.Module):
             nn.BatchNorm1d(4, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Linear(4, 1),
-            nn.Sigmoid()
+            #nn.Sigmoid()
         )
 
     def forward(self, joints, labels):

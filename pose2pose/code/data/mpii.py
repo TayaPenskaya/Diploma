@@ -40,6 +40,7 @@ class MPIIDataset(JointsDataset):
 
         self.upper_body_ids = (7, 8, 9, 10, 11, 12, 13, 14, 15)
         self.lower_body_ids = (0, 1, 2, 3, 4, 5, 6)
+        self.bones = [(0,1),(1,2),(2,6),(6,3),(3,4),(4,5),(6,7),(7,8),(8,9),(10,11),(11,12),(12,7),(7,13),(13,14),(14,15)]
 
         self.num_cats = 19
         self.cat_names = ['running', 'dancing', 'bicycling', 'walking', 'fishing and hunting', 'sport with ball',
@@ -89,23 +90,27 @@ class MPIIDataset(JointsDataset):
             
             joints = np.array(a['joints'])
             joints_vis = np.array(a['joints_vis'])
-            assert len(joints) == self.num_joints, \
-                'joint num diff: {} vs {}'.format(len(joints),
-                                                  self.num_joints)
+            
+            if not (0 in joints_vis):
+                assert len(joints) == self.num_joints, \
+                    'joint num diff: {} vs {}'.format(len(joints),
+                                                      self.num_joints)
 
-            joints_2d[:, 0:2] = joints[:, 0:2] - 1
-            joints_2d_vis[:, :2] = joints_vis[:, None]
+                joints_2d[:, 0:2] = joints[:, 0:2] - 1
+                joints_2d_vis[:, :2] = joints_vis[:, None]
 
-            gt_db.append(
-                {
-                    'image': image_name,
-                    'center': center,
-                    'scale': scale,
-                    'category': one_hot_cat,
-                    'joints_2d': joints_2d,
-                    'joints_2d_vis': joints_2d_vis,
-                }
-            )
+                gt_db.append(
+                    {
+                        'image': image_name,
+                        'center': center,
+                        'scale': scale,
+                        'category': one_hot_cat,
+                        'joints_2d': joints_2d,
+                        'joints_2d_vis': joints_2d_vis,
+                    }
+                )
+            else:
+                continue
 
         return gt_db
     
