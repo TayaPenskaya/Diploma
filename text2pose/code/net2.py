@@ -25,29 +25,28 @@ class Generator2(nn.Module):
             return layers
 
         self.head1 = nn.Sequential(
-            *block(32, 24),
-            *block(24, 16)
+            *block(32, 16)
         )
         
         self.head2 = nn.Sequential(
-            *block(19, 24),
-            *block(24, 32)
+            *block(19, 16),
+            *block(16, 8)
         )
         
         self.uptail = nn.Sequential(
             *block(48, 64),
-            *block(64, 128),
-            *block(128, 256)
+            *block(64, 92),
+            *block(92, 128)
         )
         
         self.midtail = nn.Sequential(
-            *block(256, 512),
-            *block(512, 256)
+            *block(128, 256),
+            *block(256, 128)
         )
         
         self.downtail = nn.Sequential(
-            *block(256, 128),
-            *block(128, 64),
+            *block(128, 92),
+            *block(92, 64),
             *block(64, 32)
         )
 
