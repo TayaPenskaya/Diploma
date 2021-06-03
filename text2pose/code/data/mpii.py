@@ -42,10 +42,13 @@ class MPIIDataset(JointsDataset):
         self.lower_body_ids = (0, 1, 2, 3, 4, 5, 6)
         self.bones = [(0,1),(1,2),(2,6),(6,3),(3,4),(4,5),(6,7),(7,8),(8,9),(10,11),(11,12),(12,7),(7,13),(13,14),(14,15)]
 
-        self.num_cats = 19
-        self.cat_names = ['running', 'dancing', 'bicycling', 'walking', 'fishing and hunting', 'sport with ball',
-                           'standing', 'sitting', 'skiing', 'swimming', 'cooking', 'driving', 'rock climbing', 
-                           'horseback', 'skateboarding', 'yoga', 'canoe', 'training', 'lying']
+#         self.num_cats = 19
+#         self.cat_names = ['running', 'dancing', 'bicycling', 'walking', 'fishing and hunting', 'sport with ball',
+#                            'standing', 'sitting', 'skiing', 'swimming', 'cooking', 'driving', 'rock climbing', 
+#                            'horseback', 'skateboarding', 'yoga', 'canoe', 'training', 'lying']
+
+        self.num_cats = 2
+        self.cat_names = ['standing', 'sitting']
         
         self.one_hot = self.get_one_hot()
         

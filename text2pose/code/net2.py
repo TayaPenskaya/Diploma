@@ -25,29 +25,39 @@ class Generator2(nn.Module):
             return layers
 
         self.head1 = nn.Sequential(
-            *block(32, 16)
+            *block(64, 80),
+            *block(80, 92),
+            *block(92, 128),
+            *block(128, 144),
         )
         
         self.head2 = nn.Sequential(
-            *block(19, 16),
-            *block(16, 8)
+            *block(2, 4),
+            *block(4, 8),
+            *block(8, 16),
+            *block(16, 32),
+            *block(32, 48),
         )
         
         self.uptail = nn.Sequential(
-            *block(48, 64),
-            *block(64, 92),
-            *block(92, 128)
+            *block(192, 224),
+            *block(224, 256),
         )
         
         self.midtail = nn.Sequential(
-            *block(128, 256),
-            *block(256, 128)
+            *block(256, 512),
+            *block(512, 640),
+            *block(640, 512),
+            *block(512, 256),
         )
         
         self.downtail = nn.Sequential(
-            *block(128, 92),
+            *block(256, 192),
+            *block(192, 144),
+            *block(144, 92),
             *block(92, 64),
-            *block(64, 32)
+            *block(64, 48),
+            *block(48, 32),
         )
 
     def forward(self, noise, labels):
@@ -71,31 +81,42 @@ class Discriminator2(nn.Module):
 
         self.joint_shape = (16, 2)
 
-        self.model = nn.Sequential(
-            nn.Linear(19 + int(np.prod(self.joint_shape)), 24),
-            nn.BatchNorm1d(24, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(24, 32),
+        self.head1 = nn.Sequential(
+            nn.Linear(int(np.prod(self.joint_shape)), 32),
             nn.BatchNorm1d(32, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Linear(32, 64),
             nn.BatchNorm1d(64, 0.8),
+            nn.LeakyReLU(0.2, inplace=True)
+        )
+        
+        self.head2 = nn.Sequential(
+            nn.Linear(2, 8),
+            nn.BatchNorm1d(8, 0.8),
+            nn.LeakyReLU(0.2, inplace=True)
+        )
+        
+        self.tail = nn.Sequential(
+            nn.Linear(8 + 64, 128),
+            nn.BatchNorm1d(128, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(64, 32),
+            nn.Linear(128, 256),
+            nn.BatchNorm1d(256, 0.8),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128, 0.8),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Linear(128, 32),
             nn.BatchNorm1d(32, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(32, 16),
-            nn.BatchNorm1d(16, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(16, 4),
-            nn.BatchNorm1d(4, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Linear(4, 1),
+            nn.Linear(32, 1),
             #nn.Sigmoid()
         )
 
     def forward(self, joints, labels):
-        d_in = torch.cat((joints.view(joints.size(0), -1), labels), -1)
-        validity = self.model(d_in)
+        out_joints = self.head1(joints.view(joints.size(0), -1))
+        labels = labels.type(torch.cuda.FloatTensor)
+        out_labels = self.head2(labels)
+        d_in = torch.cat((out_joints, out_labels), -1)
+        validity = self.tail(d_in)
         return validity
-

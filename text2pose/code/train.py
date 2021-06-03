@@ -28,14 +28,14 @@ from utils.loss import get_medians, calc_bones_loss
 wandb.init(project='text2pose')
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--n_epochs", type=int, default=2000, help="number of epochs of training")
-parser.add_argument("--batch_size", type=int, default=1024, help="size of the batches")
+parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
+parser.add_argument("--batch_size", type=int, default=32, help="size of the batches")
 parser.add_argument("--lr", type=float, default=1e-2, help="adam: learning rate")
 parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
 parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
-parser.add_argument("--latent_dim", type=int, default=32, help="dimensionality of the latent space")
-parser.add_argument("--n_classes", type=int, default=19, help="number of classes for labels")
+parser.add_argument("--latent_dim", type=int, default=64, help="dimensionality of the latent space")
+parser.add_argument("--n_classes", type=int, default=2, help="number of classes for labels")
 parser.add_argument("--n_joints", type=int, default=16, help="number of joints")
 parser.add_argument("--dim", type=int, default=2, help="dimension of joints")
 parser.add_argument("--sample_interval", type=int, default=400, help="interval between image sampling")
@@ -44,7 +44,7 @@ print(opt)
 
 os.makedirs("../data/joints", exist_ok=True) 
 
-dataset = MPIIDataset('../data/mpii.json')
+dataset = MPIIDataset('../data/mpii2cats.json')
 
 medians = get_medians(dataset)
 
@@ -60,8 +60,8 @@ cuda = True if torch.cuda.is_available() else False
 adversarial_loss = torch.nn.BCELoss()
 
 # Initialize generator and discriminator
-generator = Generator2()
-discriminator = Discriminator2()
+generator = Generator()
+discriminator = Discriminator()
 
 if cuda:
     generator.cuda()
@@ -78,25 +78,58 @@ optimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt
 FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
 LongTensor = torch.cuda.LongTensor if cuda else torch.LongTensor
 
+def kp2gaussian(kp, spatial_size, kp_variance):
+    coordinate_grid = make_coordinate_grid(spatial_size, kp.type())
+    number_of_leading_dimensions = len(kp.shape) - 1
+    shape = (1,) * number_of_leading_dimensions + coordinate_grid.shape
+    coordinate_grid = coordinate_grid.view(*shape)
+    repeats = kp.shape[:number_of_leading_dimensions] + (1, 1, 1)
+    coordinate_grid = coordinate_grid.repeat(*repeats)
+    shape = kp.shape[:number_of_leading_dimensions] + (1, 1, 2)
+    kp = kp.view(*shape)
+    mean_sub = (coordinate_grid - kp)
+    out = torch.exp(-0.5 * (mean_sub ** 2).sum(-1) / kp_variance)
+    return out
 
-def compute_gradient_penalty(D, real_samples, fake_samples, labels):
-    # Random weight term for interpolation between real and fake samples
-    alpha = FloatTensor(np.random.random((real_samples.size(0), 1, 1)))
-    # Get random interpolation between real and fake samples
-    interpolates = (alpha * real_samples + ((1 - alpha) * fake_samples)).requires_grad_(True)
-    d_interpolates = D(interpolates, labels)
-    fake = Variable(FloatTensor(real_samples.shape[0], 1).fill_(1.0), requires_grad=False)
-    # Get gradient w.r.t. interpolates
+def make_coordinate_grid(spatial_size, type):
+    h, w = spatial_size
+    x = torch.arange(w).type(type)
+    y = torch.arange(h).type(type)
+    x = x / (w - 1)
+    y = y / (h - 1)
+    yy = y.view(-1, 1).repeat(1, w)
+    xx = x.view(1, -1).repeat(h, 1)
+    meshed = torch.cat([xx.unsqueeze_(2), yy.unsqueeze_(2)], 2)
+    return meshed
+
+
+def compute_gradient_penalty(critic, real_data, fake_data, labels, penalty=1, device='cuda'):
+    n_elements = real_data.nelement()
+    batch_size = real_data.size()[0]
+    colors = real_data.size()[1]
+    image_width = real_data.size()[2]
+    image_height = real_data.size()[3]
+    alpha = torch.rand(batch_size, 1).expand(batch_size, int(n_elements / batch_size)).contiguous()
+    alpha = alpha.view(batch_size, colors, image_width, image_height).to(device)
+
+    fake_data = fake_data.view(batch_size, colors, image_width, image_height)
+    interpolates = alpha * real_data.detach() + ((1 - alpha) * fake_data.detach())
+
+    interpolates = interpolates.to(device)
+    interpolates.requires_grad_(True)
+    critic_interpolates = critic(interpolates, labels)
+
     gradients = torch.autograd.grad(
-        outputs=d_interpolates,
+        outputs=critic_interpolates,
         inputs=interpolates,
-        grad_outputs=fake,
+        grad_outputs=torch.ones(critic_interpolates.size()).to(device),
         create_graph=True,
         retain_graph=True,
-        only_inputs=True,
+        only_inputs=True
     )[0]
+
     gradients = gradients.view(gradients.size(0), -1)
-    gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean()
+    gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * penalty
     return gradient_penalty
 
 # datetime object containing current date and time
@@ -119,6 +152,8 @@ for epoch in range(opt.n_epochs):
 
         # Configure input
         real_joints = Variable(joints.type(FloatTensor))
+        real_gaussians = kp2gaussian(real_joints, (64, 64), 5e-4)
+        
         gen_ids = torch.randint(0, opt.n_classes, size = (1, batch_size))
         gen_labels = torch.nn.functional.one_hot(gen_ids, opt.n_classes)
         gen_labels = torch.squeeze(gen_labels).cuda()
@@ -138,22 +173,23 @@ for epoch in range(opt.n_epochs):
 
             # Generate a batch of images
             gen_joints = generator(z, gen_labels)
+            gen_gaussians = kp2gaussian(gen_joints, (64, 64), 5e-4)
         
             optimizer_D.zero_grad()
 
             # Loss for real images
-            validity_real = discriminator(real_joints, labels)
+            validity_real = discriminator(real_gaussians, labels)
             #d_real_loss = torch.log(validity_real + 1e-12)
             d_real_loss = torch.mean(validity_real)
             #d_real_loss.backward(mone)
 
             # Loss for fake images
-            validity_fake = discriminator(gen_joints.detach(), gen_labels)
+            validity_fake = discriminator(gen_gaussians, gen_labels)
             #d_fake_loss = -torch.log(1 - validity_fake + 1e-12)
             d_fake_loss = torch.mean(validity_fake)
             #d_fake_loss.backward(one)
 
-            gradient_penalty = compute_gradient_penalty(discriminator, joints.cuda().data, gen_joints.data, labels)
+            gradient_penalty = compute_gradient_penalty(discriminator, real_gaussians, gen_gaussians, labels)
             #gradient_penalty.backward()
 
             # Total discriminator loss
@@ -174,11 +210,13 @@ for epoch in range(opt.n_epochs):
 
         # Generate a batch of images
         gen_joints = generator(z, gen_labels)
+        gen_gaussians = kp2gaussian(gen_joints, (64, 64), 5e-4)
+        
         
         # Loss measures generator's ability to fool the discriminator
-        validity = discriminator(gen_joints, gen_labels)
+        validity = discriminator(gen_gaussians, gen_labels)
 
-        bones_loss = torch.mean(torch.sigmoid(FloatTensor(calc_bones_loss(gen_joints.cpu().detach().numpy(), medians))))
+        #bones_loss = torch.mean(torch.sigmoid(FloatTensor(calc_bones_loss(gen_joints.cpu().detach().numpy(), medians))))
         g_loss = torch.sum(torch.nn.functional.relu(-1 * gen_joints)) - torch.mean(validity)
         #print('bones', bones_loss)
         #print('minus', torch.sum(torch.nn.functional.relu(-1 * gen_joints)))
@@ -203,7 +241,7 @@ for epoch in range(opt.n_epochs):
         % (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())
         )\
     
-    if ((epoch + 1) % 100 == 0):
+    if ((epoch + 1) % 50 == 0):
         torch.save({
             'epoch': epoch,
             'g_state_dict': generator.state_dict(),
