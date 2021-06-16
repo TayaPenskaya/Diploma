@@ -47,15 +47,16 @@ class MPIIDataset(JointsDataset):
 #                            'standing', 'sitting', 'skiing', 'swimming', 'cooking', 'driving', 'rock climbing', 
 #                            'horseback', 'skateboarding', 'yoga', 'canoe', 'training', 'lying']
 
-        self.num_cats = 2
-        self.cat_names = ['standing', 'sitting']
+#         self.num_cats = 2
+#         self.cat_names = ['standing', 'sitting']
+
+        self.num_cats = 1
+        # self.cat_names = ['standing']
         
         self.one_hot = self.get_one_hot()
         
         self.db = self._get_db()
         self.db = self.select_data(self.db)
-
-        print('=> load {} samples'.format(len(self.db)))
 
     def _get_db(self):
 
@@ -69,14 +70,15 @@ class MPIIDataset(JointsDataset):
             center = np.array(a['center'], dtype=np.float)
             scale = np.array([a['scale'], a['scale']], dtype=np.float)  
             
-            assert len(self.cat_names) == self.num_cats, \
-                'cats num diff: {} vs {}'.format(len(self.cat_names),
-                                                  self.num_cats)
-            category = a['category']
-            assert category in self.cat_names, \
-                'no such cat name: {}'.format(category)
+#             assert len(self.cat_names) == self.num_cats, \
+#                 'cats num diff: {} vs {}'.format(len(self.cat_names),
+#                                                   self.num_cats)
+            #category = a['category']
+#             assert category in self.cat_names, \
+#                 'no such cat name: {}'.format(category)
             
-            one_hot_cat = self.one_hot[self.cat_names.index(category)]
+            one_hot_cat = self.one_hot[0]
+            #one_hot_cat = self.one_hot[self.cat_names.index(category)]
             
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:
