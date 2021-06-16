@@ -148,16 +148,18 @@ class Text2Pose:
                 final_text.append(lemmatizer.lemmatize(word))
         return list(set(final_text))
     
-descr = "This is a program that generates pose by a text description."
+if __name__ == '__main__':
+    
+    descr = "This is a program that generates pose by a text description."
 
-parser = argparse.ArgumentParser(description=descr)
-parser.add_argument("--text", "-t", help="set text description")
+    parser = argparse.ArgumentParser(description=descr)
+    parser.add_argument("--text", "-t", help="set text description")
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-if args.text:
-    t2p = Text2Pose()
-    poses = t2p.get_pose_by_text(args.text)
-    print(poses)
-else:
-    raise ValueError("Missing text description.")
+    if args.text:
+        t2p = Text2Pose()
+        poses = t2p.get_pose_by_text(args.text)
+        print(poses)
+    else:
+        raise ValueError("Missing text description.")
