@@ -6,6 +6,10 @@ from itertools import chain
 from collections import defaultdict
 from nltk.corpus import wordnet as wn
 
+import nltk
+nltk.download("wordnet")
+nltk.download("stopwords")
+
 from data.mpii import MPIIDataset
 from gan.net import Generator
 
@@ -75,7 +79,7 @@ class Text2Pose:
         
         for cat in self.cats:
             if isfile(cats_dict[cat]["model"]):
-                cats_dict[cat]["model"] = torch.load(cats_dict[cat]["model"])
+                cats_dict[cat]["model"] = torch.load(cats_dict[cat]["model"], map_location=torch.device('cpu'))
 
         return cats_dict
     
@@ -86,10 +90,10 @@ class Text2Pose:
     
     @staticmethod
     def __get_generated_pose(model): 
-            gen = Generator().to('cuda')
+            gen = Generator().to('cpu')
             gen.load_state_dict(model['g_state_dict'])
-            noise = Variable(torch.cuda.FloatTensor(np.random.normal(0, 1, (2, 32))), requires_grad=False)
-            out = gen(noise,  Variable(torch.cuda.LongTensor([1], device='cuda'))).cpu().detach().numpy()
+            noise = Variable(torch.FloatTensor(np.random.normal(0, 1, (2, 32))), requires_grad=False)
+            out = gen(noise,  Variable(torch.LongTensor([1], device='cpu'))).cpu().detach().numpy()
             return out[0].tolist()
 
     @staticmethod
