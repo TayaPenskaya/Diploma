@@ -47,7 +47,7 @@ class Text2Pose:
             for word in self.cats_dict[cat]["keywords"]:
                 if (word in words_text):
                     flag = randrange(0, 2)
-                    if (cat == 'standing' or 'lying') and flag:
+                    if (cat == 'standing' or cat == 'lying') and flag:
                         res = Text2Pose.__get_generated_pose(self.cats_dict[cat]["model"])
                     else: 
                         res = Text2Pose.__get_dataset_pose(self.cats_dict[cat]["dataset"])
