@@ -55,8 +55,8 @@ class Text2Pose:
                     return res
 
         flag = randrange(0, 2)
-        res = Text2Pose.__get_generated_pose(self.cats_dict[cat]["model"]) if flag \
-              else Text2Pose.__get_dataset_pose(self.cats_dict[cat]["dataset"])
+        res = Text2Pose.__get_generated_pose(self.cats_dict["standing"]["model"]) if flag \
+              else Text2Pose.__get_dataset_pose(self.cats_dict["standing"]["dataset"])
 
         return res
     
