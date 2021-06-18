@@ -39,7 +39,7 @@ class Segmentation:
         added_image = cv2.addWeighted(image.astype(int),0.5,prediction.astype(int),0.5,0)
         cv2.imwrite('./results/res.jpg', added_image)
         with open('./results/res.jpg', "rb") as image_file:
-    		encoded_string = b64encode(image_file.read())
+    	    encoded_string = b64encode(image_file.read())
         return str(encoded_string)
 
 
