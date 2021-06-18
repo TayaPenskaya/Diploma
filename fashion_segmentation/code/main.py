@@ -38,8 +38,9 @@ class Segmentation:
         prediction = cv2.imread('./results/tmp.jpg') 
         added_image = cv2.addWeighted(image.astype(int),0.5,prediction.astype(int),0.5,0)
         cv2.imwrite('./results/res.jpg', added_image)
-        
-        return str(b64encode(added_image))
+        with open('./results/res.jpg', "rb") as image_file:
+    		encoded_string = b64encode(image_file.read())
+        return str(encoded_string)
 
 
 if __name__ == "__main__":
