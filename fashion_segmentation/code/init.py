@@ -19,7 +19,7 @@ def default_page():
     return response.response_success("ok")
 
 def main():
-    app.run(port=1488)
+    app.run(host="0.0.0.0", port=1488)
 
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
