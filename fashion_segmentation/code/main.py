@@ -40,7 +40,7 @@ class Segmentation:
         cv2.imwrite('./results/res.jpg', added_image)
         with open('./results/res.jpg', "rb") as image_file:
     	    encoded_string = b64encode(image_file.read())
-        return str(encoded_string)
+        return encoded_string
 
 
 if __name__ == "__main__":
