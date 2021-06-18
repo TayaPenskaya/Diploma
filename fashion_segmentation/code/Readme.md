@@ -8,17 +8,17 @@ This module generates pose vector from given text.
 
     ```
     docker build -t model .
-    sudo docker run -it -p 5004:5004 --net="host" --rm  --name model_running model
+    sudo docker run -it -p 5004:5004 --rm  --name model_running model
     ```
 
     reading logs:
     ```
-    docker logs -f model_running2
+    docker logs -f model_running
     ```
 
     stopping:
     ```
-    docker stop model_running2
+    docker stop model_running
     ```
 
 
