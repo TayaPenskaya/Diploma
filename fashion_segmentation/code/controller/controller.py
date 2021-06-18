@@ -11,7 +11,7 @@ segm = Segmentation()
 
 @segmentation_controller.route(rule="/", methods=["POST"])
 def get_segmentation():
-    image = request.form["image"]
+    image = request.get_json()["image"]
 
     image_segmented = segm.get_segmentation(image)
 
