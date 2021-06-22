@@ -113,6 +113,8 @@ class Segmentation:
                 newData.append(
                     (255, 255, 255, 0) if np.all(matte_blur[x * height + y] < 0.1) else datas[x * height + y])
 
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
         img.putdata(newData)
         img.save('./results/segm.jpg')
 
