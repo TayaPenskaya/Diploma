@@ -76,7 +76,7 @@ class Segmentation:
         im = F.interpolate(im, size=(im_rh, im_rw), mode='area')
 
         # inference
-        _, _, matte = self.modnet(im.cuda(), True)
+        _, _, matte = self.modnet(im, True)
 
         # resize and save matte
         matte = F.interpolate(matte, size=(im_h, im_w), mode='area')
