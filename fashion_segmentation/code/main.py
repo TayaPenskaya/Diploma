@@ -120,9 +120,9 @@ class Segmentation:
         
         
     def get_segmentation(self, img):   
-        #imgdata = b64decode(str(img))
-        #img = Image.open(io.BytesIO(imgdata))
-        img = Image.open(img)
+        imgdata = b64decode(str(img))
+        img = Image.open(io.BytesIO(imgdata))
+        #img = Image.open(img)
         matte = self.get_matte(img)
         segm = self.get_image(img, matte)
 
@@ -137,8 +137,8 @@ class Segmentation:
         is_success, buffer = cv2.imencode(".jpg", added_image) 
         io_buf = io.BytesIO(buffer)
         
-        return "ku"
-        #return b64encode(io_buf.getvalue()).decode("utf-8")
+        #return "ku"
+        return b64encode(io_buf.getvalue()).decode("utf-8")
 
 
 if __name__ == "__main__":
