@@ -30,7 +30,7 @@ class Segmentation:
             self.predictor = Predictor(config, checkpoint_path='./experiments/checkpoint_last.pth.tar')
         self.modnet = MODNet(backbone_pretrained=False)
         self.modnet = nn.DataParallel(self.modnet)
-        self.modnet.load_state_dict(torch.load('./pretrained/modnet_photographic_portrait_matting.ckpt'))
+        self.modnet.load_state_dict(torch.load('./pretrained/modnet_photographic_portrait_matting.ckpt', map_location=torch.device('cpu')))
         self.modnet.eval()
         
     
