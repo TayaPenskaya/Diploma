@@ -125,18 +125,20 @@ class Segmentation:
         imgdata = b64decode(str(img))
         img = Image.open(io.BytesIO(imgdata))
         #img = Image.open(img)
-        matte = self.get_matte(img)
-        segm = self.get_image(img, matte)
 
-        image, prediction = self.predictor.segment_image(Image.open('./results/segm.jpg'))
+        image, prediction = self.predictor.segment_image(img)
         
         my_cm = plt.get_cmap('nipy_spectral')
         plt.imsave('./results/tmp.jpg', prediction, cmap=my_cm)
         prediction = cv2.imread('./results/tmp.jpg') 
         added_image = cv2.addWeighted(image.astype(int),0.5,prediction.astype(int),0.3,0)
-        cv2.imwrite('./results/res.jpg', added_image)
         added_image = cv2.cvtColor(np.uint8(added_image), cv2.COLOR_BGR2RGB)
-        is_success, buffer = cv2.imencode(".jpg", added_image) 
+        cv2.imwrite('./results/res.jpg', added_image)
+ 
+        matte = self.get_matte(added_image)
+        segm = self.get_image(added_image, matte)
+        
+        is_success, buffer = cv2.imencode(".jpg", cv2.imread('./results/segm.jpg')) 
         io_buf = io.BytesIO(buffer)
         
         #return "ku"
