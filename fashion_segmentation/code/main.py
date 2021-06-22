@@ -135,8 +135,8 @@ class Segmentation:
         added_image = cv2.cvtColor(np.uint8(added_image), cv2.COLOR_BGR2RGB)
         cv2.imwrite('./results/res.jpg', added_image)
  
-        matte = self.get_matte(added_image)
-        segm = self.get_image(added_image, matte)
+        matte = self.get_matte(Image.open('./results/res.jpg'))
+        segm = self.get_image(Image.open('./results/res.jpg'), matte)
         
         is_success, buffer = cv2.imencode(".jpg", cv2.imread('./results/segm.jpg')) 
         io_buf = io.BytesIO(buffer)
