@@ -29,7 +29,7 @@ class Segmentation:
             config['network']['use_cuda'] = config['network']['use_cuda'] and torch.cuda.is_available()
             self.predictor = Predictor(config, checkpoint_path='./experiments/checkpoint_last.pth.tar')
         self.modnet = MODNet(backbone_pretrained=False)
-        self.modnet = nn.DataParallel(self.modnet).cuda()
+        self.modnet = nn.DataParallel(self.modnet)
         self.modnet.load_state_dict(torch.load('./pretrained/modnet_photographic_portrait_matting.ckpt'))
         self.modnet.eval()
         
