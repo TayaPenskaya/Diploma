@@ -1,10 +1,37 @@
-# People matting
+# Segmentation
+
+This module generates detailed segmentation.
+
+## Launching
+
+- **build & run module**
+
+    ```
+    docker build -t model .
+    docker run -d -p 1488:1488 --rm  --name model_running model
+    ```
+
+    reading logs:
+    ```
+    docker logs -f model_running
+    ```
+
+    stopping:
+    ```
+    docker stop model_running
+    ```
+
+
+## Usage
 
 ```
-python3 image_matting/inference.py \
-        --input-path ../data/test/input \
-        --output-path ../data/test/input \
-        --ckpt-path ./pretrained/modnet_photographic_portrait_matting.ckpt
+curl -X POST -d "image=" "http://localhost:1488/get_segmentation/"
 ```
 
-with the help of [MODNet](https://github.com/ZHKKKe/MODNet)
+answer:
+```
+{
+   
+}
+```
+
