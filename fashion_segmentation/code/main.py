@@ -114,7 +114,7 @@ class Segmentation:
                     (255, 255, 255, 0) if np.all(matte_blur[x * height + y] < 0.1) else datas[x * height + y])
 
         img.putdata(newData)
-        img.save('./results/segm.jpg')
+        img.save('./results/segm.png')
 
         return newData
         
@@ -126,7 +126,7 @@ class Segmentation:
         matte = self.get_matte(img)
         segm = self.get_image(img, matte)
 
-        image, prediction = self.predictor.segment_image(Image.open('./results/segm.jpg'))
+        image, prediction = self.predictor.segment_image(Image.open('./results/segm.png'))
         
         my_cm = plt.get_cmap('nipy_spectral')
         plt.imsave('./results/tmp.jpg', prediction, cmap=my_cm)
