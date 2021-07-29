@@ -28,10 +28,3 @@ This module generates detailed segmentation.
 curl -X POST -d "image=" "http://localhost:1488/get_segmentation/"
 ```
 
-answer:
-```
-{
-   
-}
-```
-
