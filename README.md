@@ -8,6 +8,8 @@
 
 ## <a name="description"> Description </a> [↑](#diploma)
 
+![](./docs/imgs/structure.jpeg)
+
 ## <a name="helpful"> Helpful links </a> [↑](#diploma)
 - [DCGAN for segmentation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html)
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
