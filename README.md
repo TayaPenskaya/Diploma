@@ -1,8 +1,14 @@
-# Diploma
+# <a name="diploma">Diploma</a>
 
-**Detailed segmentation of a human image and generation of a new image.**
+## Detailed segmentation of a human image and generation of a new image.
 
-## Notes
+## Table of contents
+- [Description](#description)
+- [Helpful links](#helpful)
+
+## <a name="description"> Description </a> [↑](#diploma)
+
+## <a name="helpful"> Helpful links </a> [↑](#diploma)
 - [DCGAN for segmentation](https://pytorch.org/tutorials/beginner/dcgan_faces_tutorial.html)
 - [Face GAN](https://github.com/IIGROUP/TediGAN)
 - [Face GitHubs](https://github.com/ChanChiChoi/awesome-Face_Recognition)
