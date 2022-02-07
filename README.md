@@ -1,6 +1,6 @@
 # <a name="diploma">Diploma</a>
 
-## Detailed segmentation of a human image and generation of a new image.
+## Pose Guided Person Image Generation with Detailed Segmentation
 
 ## Table of contents
 - [Description](#description)
